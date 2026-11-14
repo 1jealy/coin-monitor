@@ -264,7 +264,11 @@ async function loadMarkets() {
   const krw = all.filter((m) => m.market.startsWith("KRW-"));
   let ranked = krw;
   try {
-    const tick = await api(NET.upbit(`ticker?markets=${krw.map((m) => m.market).join(",")}`));
+    // 한 번에 다 넣으면 주소가 너무 길어 거절됨(414) → 100개씩 나눠 요청
+    const groups = [];
+    for (let i = 0; i < krw.length; i += 100) groups.push(krw.slice(i, i + 100));
+    const tick = (await Promise.all(groups.map((g) =>
+      api(NET.upbit(`ticker?markets=${g.map((m) => m.market).join(",")}`))))).flat();
     const value = new Map(tick.map((t) => [t.market, t.acc_trade_price_24h]));
     ranked = [...krw].sort((a, b) => (value.get(b.market) || 0) - (value.get(a.market) || 0));
   } catch { /* 순위 없이 이름 순 */ }
