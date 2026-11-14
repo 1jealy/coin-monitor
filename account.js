@@ -5,7 +5,6 @@
 "use strict";
 
 const KST = 9 * 3600;
-const WS_URL = "wss://api.upbit.com/websocket/v1";
 const $ = (id) => document.getElementById(id);
 const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const store = {
@@ -280,7 +279,7 @@ function connect() {
   clearInterval(S.pingTimer);
   if (S.ws) { S.ws.onclose = null; S.ws.close(); }
   setStatus("connecting", "연결 중");
-  const ws = new WebSocket(WS_URL);
+  const ws = new WebSocket(NET.wsUrl());
   ws.binaryType = "arraybuffer";
   S.ws = ws;
   const dec = new TextDecoder();
@@ -370,6 +369,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   try {
     await NET.detect();
+    NET.label();
     S.acct = await getJSON(NET.account());
   } catch (e) {
     $("total").textContent = "계좌를 불러오지 못했습니다";

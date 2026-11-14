@@ -7,7 +7,6 @@
 "use strict";
 
 const KST = 9 * 3600;
-const WS_URL = "wss://api.upbit.com/websocket/v1";
 const IV_SECONDS = { "1": 60, "5": 300, "15": 900, "60": 3600, D: 86400 };
 const HISTORY_PAGES = 2; // 200개씩 2번 → 400개
 const BAND_HOURS = [6, 8]; // 실험 #5: 한국 시간 06~08시
@@ -290,7 +289,7 @@ function connect() {
   clearInterval(state.pingTimer);
   if (state.ws) { state.ws.onclose = null; state.ws.close(); }
   setStatus("connecting", "연결 중");
-  const ws = new WebSocket(WS_URL);
+  const ws = new WebSocket(NET.wsUrl());
   ws.binaryType = "arraybuffer";
   state.ws = ws;
   const decoder = new TextDecoder();
@@ -438,9 +437,9 @@ async function pollCoinone() {
 }
 
 function renderCost() {
-  const UP_FEE = 0.1; // 0.05% × 2
+  const UP_FEE = NET.mode === "server" ? 0.1 : null; // 업비트 0.05% × 2. 공개 주소(빗썸)는 수수료를 따로 확인해야 해서 비워 둠
   $("up-spread").textContent = fmtPct(state.upSpread);
-  $("up-total").textContent = state.upSpread == null ? "—" : fmtPct(state.upSpread + UP_FEE);
+  $("up-total").textContent = state.upSpread == null || UP_FEE == null ? "—" : fmtPct(state.upSpread + UP_FEE);
   if (state.coSpread === "static") {
     $("co-spread").textContent = "PC 서버에서만";
     $("co-total").textContent = "—";
@@ -527,6 +526,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.body.dataset.band = $("band").checked && state.iv !== "D" ? "on" : "off";
 
   await NET.detect();
+  NET.label();
+  if (NET.mode !== "server") $("up-fee").textContent = "확인 필요";
   try {
     await loadMarkets();
   } catch (e) {

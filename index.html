@@ -107,7 +107,7 @@
         <table class="cost">
           <thead><tr><th scope="col">거래소</th><th scope="col">가격 차이</th><th scope="col">수수료(왕복)</th><th scope="col">합계</th></tr></thead>
           <tbody>
-            <tr><th scope="row">업비트</th><td id="up-spread">—</td><td>0.100%</td><td id="up-total" class="strong">—</td></tr>
+            <tr><th scope="row" data-ex>업비트</th><td id="up-spread">—</td><td id="up-fee">0.100%</td><td id="up-total" class="strong">—</td></tr>
             <tr><th scope="row">코인원</th><td id="co-spread">—</td><td>0%<span class="fine">*</span></td><td id="co-total" class="strong">—</td></tr>
           </tbody>
         </table>
@@ -115,7 +115,7 @@
       </section>
 
       <section class="panel" aria-labelledby="book-heading">
-        <h2 id="book-heading" class="panel-title">호가 <small>업비트</small></h2>
+        <h2 id="book-heading" class="panel-title">호가 <small data-ex>업비트</small></h2>
         <div class="book" id="book">
           <p class="empty">호가를 기다리는 중…</p>
         </div>
@@ -128,6 +128,6 @@
     </aside>
   </main>
 
-  <p class="foot">업비트·코인원 공개 시세를 이 컴퓨터에서 직접 받아 보여 줍니다. 투자 판단의 근거가 아니라 관찰용입니다.</p>
+  <p class="foot"><span data-ex>업비트</span> 공개 시세(실시간)를 받아 보여 줍니다. 코인원 비교는 PC 서버로 열었을 때만 됩니다. 투자 판단의 근거가 아니라 관찰용입니다.</p>
 </body>
 </html>
