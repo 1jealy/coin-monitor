@@ -3,7 +3,7 @@
   "short_name": "코인 모니터",
   "description": "비트코인 시세와 (모의) 계좌를 실시간으로 보는 앱",
   "lang": "ko",
-  "start_url": "account.html",
+  "start_url": "paper.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#1a1a19",

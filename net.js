@@ -43,6 +43,19 @@ const NET = {
   account() {
     return this.mode === "server" ? "/api/account" : "mock_account.json";
   },
+  /** 1시간 캔들 200개 주소 (toSec 이전 것). 업비트는 UTC 'Z', 빗썸은 한국 시간 문자열을 받는다. */
+  hourCandles(market, toSec) {
+    const q = new URLSearchParams({ market, count: "200" });
+    if (toSec) {
+      if (this.mode === "server") {
+        q.set("to", new Date(toSec * 1000).toISOString().slice(0, 19) + "Z");
+      } else {
+        const k = new Date((toSec + 9 * 3600) * 1000).toISOString();
+        q.set("to", `${k.slice(0, 10)} ${k.slice(11, 19)}`);
+      }
+    }
+    return this.upbit(`candles/minutes/60?${q}`);
+  },
 };
 
 /* 인터넷 주소(https)로 열렸을 때만 홈 화면 앱 보조 파일 등록. 이 PC(localhost)·와이파이(http)에서는 안 함. */

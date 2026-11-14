@@ -2,8 +2,8 @@
  * 화면 파일은 항상 새로 받고, 인터넷이 끊겼을 때만 마지막으로 받은 것을 보여 준다.
  * 시세·계좌 데이터는 저장하지 않는다.
  */
-const CACHE = "coin-monitor-v3";
-const SHELL = ["./", "account.html", "index.html", "styles.css", "net.js", "coins.js", "account.js", "app.js",
+const CACHE = "coin-monitor-v4";
+const SHELL = ["./", "paper.html", "account.html", "index.html", "styles.css", "net.js", "coins.js", "strategy.js", "paper.js", "account.js", "app.js",
   "manifest.webmanifest", "icons/icon-192.png"];
 
 self.addEventListener("install", (e) => {

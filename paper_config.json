@@ -1,0 +1,17 @@
+{
+  "name": "실험 #8 모의 투자",
+  "note": "실제 돈이 아닙니다. 시작일 이후 실제 시세에 실험 #8 규칙을 그대로 적용해 매번 다시 계산합니다.",
+  "market": "KRW-BTC",
+  "start": "2026-11-14T00:00:00Z",
+  "capital": 1000000,
+  "side_cost": 0.0015,
+  "expect": {
+    "label": "검증 기간 2024~2026 (업비트 수수료 기준)",
+    "trades_per_year": 12.4,
+    "win_rate": 0.43,
+    "avg_trade": 0.0149,
+    "cagr": 0.183,
+    "max_drawdown": -0.123,
+    "invested": 0.16
+  }
+}

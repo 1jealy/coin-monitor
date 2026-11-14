@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fcfcfb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a19" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="코인 모니터">
+  <title>모의 투자 · 코인 모니터</title>
+  <link rel="manifest" href="manifest.webmanifest?v=20261114141320">
+  <link rel="icon" href="icons/icon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="styles.css?v=20261114141320">
+  <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js" defer></script>
+  <script src="net.js?v=20261114141320" defer></script>
+  <script src="coins.js?v=20261114141320" defer></script>
+  <script src="strategy.js?v=20261114141320" defer></script>
+  <script src="paper.js?v=20261114141320" defer></script>
+</head>
+<body class="paper">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="currentColor" opacity=".15"/><path d="m7.5 12.3 3 3 6-6.3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-no" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="currentColor" opacity=".12"/><path d="M12 7.5v5.5M12 16.3v.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5.2l3.2 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4m0 0h11l-2 4 2 4H5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0V4ZM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4m-3.5 3h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <header class="bar">
+    <h1 class="brand">코인 모니터</h1>
+    <nav class="tabs" aria-label="화면">
+      <a href="paper.html" aria-current="page">모의 투자</a>
+      <a href="account.html">내 계좌</a>
+      <a href="index.html">시세</a>
+    </nav>
+    <div class="status-wrap">
+      <p class="status" id="status" data-state="connecting" aria-live="polite">
+        <span class="dot" aria-hidden="true"></span><span id="status-text">연결 중</span>
+      </p>
+      <button type="button" class="icon-btn" id="theme" aria-label="밝은 화면/어두운 화면 바꾸기">
+        <svg width="20" height="20"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <p class="mock-note" id="paper-note">
+    <svg width="18" height="18" aria-hidden="true"><use href="#i-flag"/></svg>
+    <span><b>실험 #8 모의 투자</b> · 실제 돈이 아닙니다. <span id="start-text">시작일</span>부터 실제 시세(<span data-ex>업비트</span>)에
+      규칙을 그대로 적용해 매번 다시 계산합니다.</span>
+  </p>
+  <p class="explore-note" id="explore-note" hidden></p>
+
+  <main class="paper-layout">
+    <section class="card hero" aria-labelledby="hero-label">
+      <div class="hero-top">
+        <p class="state-badge" id="state-badge" data-state="wait">불러오는 중</p>
+        <p class="dday" id="dday"></p>
+      </div>
+      <p class="label" id="hero-label">모의 계좌 가치</p>
+      <p class="total" id="value">—</p>
+      <p class="pnl" id="value-pnl" data-dir="flat"><span>—</span></p>
+      <p class="hero-line" id="state-line">과거 시세를 불러오고 있어요…</p>
+      <div class="countdown">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-clock"/></svg>
+        <span>다음 판단까지 <b id="countdown">—</b></span>
+        <span class="muted" id="next-close"></span>
+      </div>
+    </section>
+
+    <section class="card race" aria-labelledby="race-heading">
+      <h2 class="card-title with-logo" id="race-heading"><svg width="20" height="20" aria-hidden="true"><use href="#i-trophy"/></svg>시작 이후 대결</h2>
+      <p class="card-sub">같은 돈으로 같은 날 시작했다면 (비용 포함)</p>
+      <ol class="race-list" id="race"></ol>
+    </section>
+
+    <section class="card checks" aria-labelledby="check-heading">
+      <h2 class="card-title" id="check-heading">사는 조건</h2>
+      <p class="card-sub" id="check-sub">4시간 캔들이 끝날 때 세 가지가 모두 맞으면 다음 캔들 시작에 삽니다</p>
+      <ul class="check-list" id="checks"></ul>
+    </section>
+
+    <section class="card holding-card" id="holding-card" aria-labelledby="hold2-heading" hidden>
+      <h2 class="card-title" id="hold2-heading">지금 들고 있는 거래</h2>
+      <dl class="hold-grid" id="holding"></dl>
+      <div class="meter-wrap">
+        <p class="meter-label"><span>추적 손절선까지</span><b id="stop-dist">—</b></p>
+        <div class="meter" aria-hidden="true"><i id="stop-meter"></i></div>
+        <p class="card-sub">4시간 캔들이 이 선 아래에서 끝나면 다음 캔들 시작에 팝니다. 선은 올라가기만 합니다.</p>
+      </div>
+    </section>
+
+    <section class="card chart-card paper-chart" aria-labelledby="pc-heading">
+      <div class="card-head">
+        <h2 class="card-title" id="pc-heading">4시간 차트</h2>
+        <ul class="keys">
+          <li><span class="key key-line" style="background: var(--ma60)"></span>60일 평균</li>
+          <li><span class="key key-line key-dash"></span>20개 최고가</li>
+          <li><span class="key key-line" style="background: var(--bad)"></span>추적 손절선</li>
+          <li><span class="key key-line" style="background: var(--warn); height: 4px"></span>응축 (차트 아래 띠)</li>
+        </ul>
+      </div>
+      <div class="eq-chart" id="p-chart" role="img" aria-label="4시간 캔들 차트와 매수·매도 표시. 아래 타임라인에 같은 내용이 글로 있습니다."></div>
+    </section>
+
+    <section class="card timeline-card" aria-labelledby="tl-heading">
+      <h2 class="card-title" id="tl-heading">일어난 일</h2>
+      <ol class="timeline" id="timeline"><li class="empty">불러오는 중…</li></ol>
+    </section>
+
+    <section class="card expect-card" aria-labelledby="ex-heading">
+      <h2 class="card-title" id="ex-heading">기대치와 비교</h2>
+      <p class="card-sub" id="ex-sub">백테스트 검증 기간과 지금까지의 모의 투자</p>
+      <table class="cost expect">
+        <thead><tr><th scope="col">항목</th><th scope="col">검증 기간</th><th scope="col">모의 투자</th></tr></thead>
+        <tbody id="expect"></tbody>
+      </table>
+      <p class="fine-note" id="ex-note"></p>
+    </section>
+
+    <section class="card explore-card" aria-labelledby="xp-heading">
+      <h2 class="card-title" id="xp-heading">만약 그때 시작했다면</h2>
+      <p class="card-sub">다른 날짜로 시작했으면 어땠을지 미리 봅니다. 공식 모의 투자 기록은 바뀌지 않습니다.</p>
+      <form class="al-form xp-form" id="xp-form">
+        <label><span>시작 날짜</span><input type="date" id="xp-date" min="2025-01-01"></label>
+        <div class="al-actions">
+          <button type="submit" class="btn-primary">이 날짜로 보기</button>
+          <a class="btn" href="paper.html">공식 기록으로</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <p class="foot">규칙(고정): 4시간봉 · 60일 평균 위 · 최근 하루 안 변동성 응축(6개월 중 하위 20%) · 20개 캔들 최고가 돌파 → 다음 캔들 시가 매수 /
+    고점 − 3×ATR 아래 또는 60일 평균 아래로 마감 → 다음 캔들 시가 매도. 한쪽 비용 <span id="cost-text">0.15%</span> 가정. 투자 판단의 근거가 아닙니다.</p>
+</body>
+</html>
