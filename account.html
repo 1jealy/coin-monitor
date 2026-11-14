@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fcfcfb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a19" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="코인 모니터">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>내 계좌 · 코인 모니터</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js" defer></script>
+  <script src="net.js" defer></script>
+  <script src="account.js" defer></script>
+</head>
+<body class="acct">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-up" viewBox="0 0 12 12"><path d="M6 2.5 10 8.5H2Z" fill="currentColor"/></symbol>
+    <symbol id="i-down" viewBox="0 0 12 12"><path d="M6 9.5 2 3.5h8Z" fill="currentColor"/></symbol>
+    <symbol id="i-flat" viewBox="0 0 12 12"><rect x="2" y="5.2" width="8" height="1.6" rx=".8" fill="currentColor"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2H4.5Z M10 20.5a2.2 2.2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v6M12 7.2v.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <header class="bar">
+    <h1 class="brand">코인 모니터</h1>
+    <nav class="tabs" aria-label="화면">
+      <a href="account.html" aria-current="page">내 계좌</a>
+      <a href="index.html">시세</a>
+    </nav>
+    <div class="status-wrap">
+      <p class="status" id="status" data-state="connecting" aria-live="polite">
+        <span class="dot" aria-hidden="true"></span><span id="status-text">연결 중</span>
+      </p>
+      <button type="button" class="icon-btn" id="theme" aria-label="밝은 화면/어두운 화면 바꾸기">
+        <svg width="20" height="20"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <p class="mock-note" id="mock-note">
+    <svg width="18" height="18" aria-hidden="true"><use href="#i-info"/></svg>
+    <span><b>모의 계좌</b> · 실제 계좌가 아니라 연결됐다고 가정한 예시 기록입니다. 가격만 실제 실시간 시세입니다.</span>
+  </p>
+
+  <div class="alert-banner" id="alert-banner" role="alert" hidden>
+    <svg width="20" height="20" aria-hidden="true"><use href="#i-bell"/></svg>
+    <span id="alert-text"></span>
+    <button type="button" class="link-btn" id="alert-close">닫기</button>
+  </div>
+
+  <main class="acct-layout">
+    <section class="card summary" aria-labelledby="total-label">
+      <p class="label" id="total-label">총 자산</p>
+      <p class="total" id="total">—</p>
+      <p class="pnl" id="pnl" data-dir="flat"><svg width="12" height="12"><use href="#i-flat"/></svg><span>—</span></p>
+      <dl class="facts">
+        <div><dt>넣은 돈</dt><dd id="principal">—</dd></div>
+        <div><dt>보유 현금</dt><dd id="cash">—</dd></div>
+        <div><dt>판매로 확정된 손익</dt><dd id="realized">—</dd></div>
+        <div><dt>24시간 전보다</dt><dd id="day-change">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="card holding" aria-labelledby="hold-heading">
+      <h2 class="card-title" id="hold-heading">비트코인 보유</h2>
+      <dl class="hold-grid">
+        <div><dt>보유량</dt><dd id="qty">—</dd></div>
+        <div><dt>평균 산 가격</dt><dd id="avg">—</dd></div>
+        <div><dt>지금 가격</dt><dd id="now" data-dir="flat">—</dd></div>
+        <div><dt>지금 팔면 받는 돈</dt><dd id="value">—</dd></div>
+        <div class="wide"><dt>보유분 손익 <small>(수수료 빼고)</small></dt><dd id="upnl" data-dir="flat">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="card chart-card" aria-labelledby="eq-heading">
+      <div class="card-head">
+        <h2 class="card-title" id="eq-heading">계좌 가치 변화</h2>
+        <p class="card-sub">1시간 단위 · 점선은 넣은 돈</p>
+      </div>
+      <div class="eq-legend" id="eq-legend" aria-hidden="true"></div>
+      <div class="eq-chart" id="eq-chart" role="img" aria-label="계좌 가치 변화 그래프. 아래 '표로 보기'에서 같은 숫자를 볼 수 있습니다."></div>
+      <details class="table-view">
+        <summary>표로 보기</summary>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th scope="col">시각</th><th scope="col">계좌 가치</th><th scope="col">넣은 돈 대비</th></tr></thead>
+            <tbody id="eq-rows"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <section class="card alerts" aria-labelledby="al-heading">
+      <h2 class="card-title" id="al-heading">알림 조건</h2>
+      <p class="card-sub">조건에 닿으면 화면 위에 알림이 뜹니다. 이 기기에만 저장됩니다.</p>
+      <form id="alert-form" class="al-form">
+        <label><span>가격이 이 값 <b>이상</b>이면</span>
+          <input type="text" inputmode="numeric" id="al-above" placeholder="예: 95,000,000" autocomplete="off">
+        </label>
+        <label><span>가격이 이 값 <b>이하</b>이면</span>
+          <input type="text" inputmode="numeric" id="al-below" placeholder="예: 88,000,000" autocomplete="off">
+        </label>
+        <label><span>총 손익이 이 % <b>이하</b>이면</span>
+          <input type="text" inputmode="decimal" id="al-loss" placeholder="예: -5" autocomplete="off">
+        </label>
+        <div class="al-actions">
+          <button type="submit" class="btn-primary">저장</button>
+          <button type="button" class="btn" id="al-sound">소리·진동 켜기</button>
+        </div>
+        <p class="al-state" id="al-state" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="card window5" aria-labelledby="w5-heading">
+      <h2 class="card-title" id="w5-heading">실험 #5 시간대</h2>
+      <p class="card-sub">한국 시간 새벽 6시~8시 (관찰용, 자동 매매 없음)</p>
+      <p class="w5-state" id="w5-state" data-on="false">—</p>
+    </section>
+
+    <section class="card fills" aria-labelledby="fill-heading">
+      <h2 class="card-title" id="fill-heading">거래 내역</h2>
+      <ol class="fill-list" id="fills"><li class="empty">불러오는 중…</li></ol>
+    </section>
+  </main>
+
+  <p class="foot">가격은 업비트 공개 시세(실시간)입니다. 계좌 내용은 예시 모의 기록(mock_account.json)이며, 투자 판단의 근거가 아닙니다.</p>
+</body>
+</html>
