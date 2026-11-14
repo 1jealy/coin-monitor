@@ -481,6 +481,7 @@ function selectMarket(market) {
   const info = state.markets.find((m) => m.market === market);
   $("price-heading").textContent = info ? info.korean_name : market;
   $("coin-code").textContent = `${market.slice(4)} / 원화`;
+  $("coin-logo").replaceChildren(COIN_LOGO.el(market.slice(4), 40));
   $("price").textContent = "—";
   $("trades").replaceChildren(Object.assign(document.createElement("li"), { className: "empty", textContent: "체결을 기다리는 중…" }));
   $("book").replaceChildren(Object.assign(document.createElement("p"), { className: "empty", textContent: "호가를 기다리는 중…" }));

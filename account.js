@@ -378,6 +378,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
   S.fee = S.acct.fee_rate ?? 0.0005;
   S.market = S.acct.market || "KRW-BTC";
+  $("hold-logo").replaceChildren(COIN_LOGO.el(S.market.slice(4), 26));
+  if (S.market !== "KRW-BTC") $("hold-name").textContent = S.market.slice(4);
   $("mock-note").hidden = !S.acct.mock;
   S.events = (S.acct.events || [])
     .map((e) => ({ ...e, t: Math.floor(Date.parse(e.time) / 1000) }))
